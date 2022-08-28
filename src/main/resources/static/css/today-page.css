@@ -1,0 +1,149 @@
+html {
+    height: 101%;
+    margin: 0;
+    padding: 0;
+
+}
+
+body {
+    --bs-body-bg: rgb(33, 37, 41);
+    --bs-body-color: whitesmoke;
+}
+
+element {
+    --bg-color: rgb(33, 37, 41);
+}
+
+.main-block {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    margin-left: 10%;
+}
+
+.date {
+    margin-top: 30px;
+    display: flex;
+    align-items: baseline;
+}
+
+.day-name {
+    font-size: 25px;
+}
+
+.day-number {
+    margin-left: 10px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.active-tasks {
+    margin-left: 50px;
+}
+
+.goal {
+    margin-top: 30px;
+    font-size: 18px;
+    margin-left: 16px;
+}
+
+.description {
+    font-size: 15px;
+    margin-top: -15px;
+}
+
+#time {
+    margin-top: -15px;
+    font-size: 15px;
+}
+
+.priority {
+    margin-top: 30px;
+    margin-left: -16px;
+    color: red;
+}
+
+.priority-goal-display {
+    margin-left: -16px;
+    display: flex;
+    flex-direction: row;
+}
+
+.displaying-tasks {
+    margin-left: 50px;
+    border-bottom: 1px solid gray;
+}
+
+.add-button {
+    margin-top: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 100;
+    width: 20px;
+    height: 20px;
+    border: 0;
+    border-radius: 100px;
+    font-size: 25px;
+    text-align: center;
+    color: rgb(211, 71, 71);
+    background-color: var(--bg-color);
+}
+
+.add-button:hover {
+    background-color: rgba(211, 71, 71, 0.836);
+    color: whitesmoke;
+    text-align: center;
+}
+
+.add-task {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.add-par {
+    display: flex;
+    margin-left: 5px;
+    margin-top: 3px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+form,input,select,label,textarea {
+    background-color: rgb(43, 46, 49);
+    color: whitesmoke;
+}
+
+input:active {
+    background-color: var(--bg-color);
+}
+
+
+.input-cl {
+    width: 100%;
+}
+
+.area-cl {
+    width: 100%;
+}
+
+.form-panel {
+    display: block;
+    border: 1px solid gray;
+}
+
+.del {
+    position: absolute;
+    left: 80%;
+    margin-top: -40px;
+    color: red;
+}
+
+.check {
+    position: absolute;
+    padding-right: 6px;
+    left: 78%;
+    margin-top: -40px;
+}

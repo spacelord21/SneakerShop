@@ -1,0 +1,14 @@
+spring:
+  main:
+    allow-circular-references: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sneakershop
+    password: 2100
+    username: spacelord
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    baseline-on-migrate: true
