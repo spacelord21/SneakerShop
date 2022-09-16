@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService{
                 .role(Role.CLIENT)
                 .build();
         userRepository.save(user);
-        Bucket bucket = Bucket.builder().user(user).sum(BigDecimal.valueOf(0)).build();
+        Bucket bucket = Bucket.builder().user(user).build();
         bucketRepository.save(bucket);
         userRepository.addBucketToUser(bucket,userRepository.findFirstByName(user.getName()).getId());
         return true;

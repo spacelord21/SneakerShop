@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -32,7 +33,16 @@ public class Bucket {
             joinColumns = @JoinColumn(name = "bucket_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
-    private BigDecimal sum;
 
+    public boolean removeProduct(Product product) {
+        return products.remove(product);
+    }
 
+    public void deleteAll() {
+        products.clear();
+    }
+
+    public void deleteAllById(Long id) {
+        products = products.stream().filter(x -> !Objects.equals(x.getId(), id)).toList();
+    }
 }

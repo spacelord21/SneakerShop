@@ -8,7 +8,6 @@ create table buckets
 (
     id      int8 not null,
     user_id int8,
-    sum numeric(19, 2),
     primary key (id)
 );
 create table buckets_products
