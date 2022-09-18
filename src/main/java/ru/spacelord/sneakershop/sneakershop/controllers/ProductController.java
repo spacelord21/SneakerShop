@@ -67,8 +67,14 @@ public class ProductController {
     }
 
     @PostMapping("/delete-all-from-bucket-by-id={id}")
-    public String deleteAllFromBucketById(@RequestBody UserDTO userDTO, @PathVariable(value = "id")Long id) {
+    public List<ProductDTO> deleteAllFromBucketById(@RequestBody UserDTO userDTO, @PathVariable(value = "id")Long id) {
         bucketService.deleteAllFromBucketById(userDTO.getUserName(),id);
-        return "deleted";
+        return bucketService.getBucket(userDTO.getUserName());
     }
+
+    @PostMapping("/check-bucket")
+    public Integer getAmountInBucket(@RequestBody UserDTO userDTO)  {
+        return bucketService.getAmountProductsInBucket(userDTO.getUserName());
+    }
+
 }

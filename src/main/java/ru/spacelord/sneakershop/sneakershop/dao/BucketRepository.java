@@ -7,10 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.spacelord.sneakershop.sneakershop.domain.Bucket;
-import ru.spacelord.sneakershop.sneakershop.domain.Product;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 
 @Repository

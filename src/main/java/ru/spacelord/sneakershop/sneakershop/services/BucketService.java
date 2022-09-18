@@ -60,6 +60,12 @@ public class BucketService {
         return productDTOS;
     }
 
+    public Integer getAmountProductsInBucket(String userName) {
+        return bucketRepository
+                .getBucketById(userRepository.findFirstByName(userName).getBucket().getId())
+                .getProducts().size();
+    }
+
 
     @Transactional
     public boolean deleteProductFromBucket(String userName,Long id) {
