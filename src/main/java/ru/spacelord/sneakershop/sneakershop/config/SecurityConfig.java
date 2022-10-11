@@ -52,6 +52,8 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
