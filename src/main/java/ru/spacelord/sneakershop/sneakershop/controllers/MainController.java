@@ -1,6 +1,8 @@
 package ru.spacelord.sneakershop.sneakershop.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.spacelord.sneakershop.sneakershop.dto.UserDTO;
 import ru.spacelord.sneakershop.sneakershop.services.UserService;
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping()
 public class MainController {
 
     private final UserService userService;
@@ -21,19 +23,21 @@ public class MainController {
         this.userService = userService;
     }
 
+    @PostMapping("/login")
+    public String login() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(auth.getName());
+        return "success";
+    }
+
+
     @PostMapping("/sign")
     public boolean saveUser(@RequestBody UserDTO userDTO) {
         return userService.save(userDTO);
     }
 
-    @GetMapping("/auth")
-    public String hello() {
-        return "Hello!";
-    }
-
     @PostMapping("/logout")
     public String logout() {
-        System.out.println("разлогинился");
         return "logout";
     }
 

@@ -12,8 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import ru.spacelord.sneakershop.sneakershop.domain.Role;
 
 
+import javax.servlet.ServletException;
 import javax.sql.DataSource;
 
 
@@ -39,16 +41,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+                .antMatchers("/api/v1/**").permitAll()
                 .antMatchers("/sign").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .and()
-                    .logout()
-                    .logoutUrl("/api/v1/logout").permitAll()
-                    .invalidateHttpSession(true)
-                .and().httpBasic();
+                .logout(logout -> logout.logoutUrl("/request/logout")
+                        .addLogoutHandler((request, response, auth) -> {
+                            try {
+                                request.logout();
+                            } catch (ServletException e) {
+                                System.out.println("ERROR");
+                            }
+                        }))
+                .httpBasic();
         return http.build();
     }
 
