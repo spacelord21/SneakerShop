@@ -11,7 +11,6 @@ import ru.spacelord.sneakershop.sneakershop.domain.Product;
 import ru.spacelord.sneakershop.sneakershop.dto.ProductDTO;
 
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +31,8 @@ public class BucketService {
         this.userRepository = userRepository;
     }
 
-    public void saveProduct(Long id) {
-        bucketRepository.addProduct(1L,id);
+    public void saveProduct(String userName,Long id) {
+        bucketRepository.addProduct(userRepository.findFirstByName(userName).getId(),id);
     }
 
     public List<ProductDTO> getBucket(String userName) {
@@ -71,9 +70,8 @@ public class BucketService {
     public boolean deleteProductFromBucket(String userName,Long id) {
         Bucket bucket = bucketRepository.getBucketById(userRepository.findFirstByName(userName).getBucket().getId());
         Product product = productRepository.findFirstById(id);
-        System.out.println(product);
         return bucket.removeProduct(product);
-//        bucket.removeProduct(product);
+
     }
 
     @Transactional

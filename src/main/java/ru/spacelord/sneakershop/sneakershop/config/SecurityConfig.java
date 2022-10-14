@@ -41,11 +41,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/**").permitAll()
-                .antMatchers("/sign").permitAll()
+                .antMatchers("/api/v1/products","/api/v1/login","/api/v1/categories","/api/v1/sign").permitAll()
+                .antMatchers("/api/v1/users/**").hasAuthority("ADMIN")
+                .antMatchers("/api/v1/products/set-products/**").hasAnyRole("ADMIN","MANAGER")
                 .anyRequest().authenticated()
                 .and()
-                .logout(logout -> logout.logoutUrl("/request/logout")
+                .logout(logout -> logout.logoutUrl("/api/v1/logout")
                         .addLogoutHandler((request, response, auth) -> {
                             try {
                                 request.logout();
