@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import ru.spacelord.sneakershop.sneakershop.dto.ProductDTO;
 import ru.spacelord.sneakershop.sneakershop.services.BucketService;
+import ru.spacelord.sneakershop.sneakershop.services.ProductService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -15,16 +16,18 @@ import java.util.List;
 public class BucketController {
 
     private final BucketService bucketService;
+    private final ProductService productService;
 
     @Autowired
-    public BucketController(BucketService bucketService) {
+    public BucketController(BucketService bucketService, ProductService productService) {
         this.bucketService = bucketService;
+        this.productService = productService;
     }
 
     @PostMapping("/add-to-bucket={id}")
-    public String addToBucket(@AuthenticationPrincipal User user, @PathVariable Long id) {
+    public ProductDTO addToBucket(@AuthenticationPrincipal User user, @PathVariable Long id) {
         bucketService.saveProduct(user.getUsername(), id);
-        return "All-good";
+        return productService.getProductById(id);
     }
 
     @PostMapping("/get-products-from-bucket")

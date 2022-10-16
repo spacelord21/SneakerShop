@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.spacelord.sneakershop.sneakershop.dao.BucketRepository;
 import ru.spacelord.sneakershop.sneakershop.dao.UserRepository;
 import ru.spacelord.sneakershop.sneakershop.domain.Bucket;
@@ -24,7 +25,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService, UserDetailsService{
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -78,18 +79,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findFirstByName(username);
-        if(user == null) {
-            throw new UsernameNotFoundException("User not found with username" + username);
+        if(user==null) {
+            throw new UsernameNotFoundException("User Not Found with name : " + username);
         }
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(user.getRole().name()));
-        return new org.springframework.security.core.userdetails.User(
-                user.getName(),
-                user.getPassword(),
-                roles
-        );
+        return UserDetailsImpl.build(user);
     }
 
     private UserDTO toDto(User user) {

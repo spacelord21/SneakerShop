@@ -25,6 +25,10 @@ public class ProductService {
         return this.productRepository.findAll();
     }
 
+    public ProductDTO getProductById(Long id) {
+        return toDTO(productRepository.getProductById(id));
+    }
+
     @Transactional
     public boolean changeProduct(ProductDTO productDTO) {
         Product product = productRepository.getProductById(productDTO.getId());
@@ -67,6 +71,10 @@ public class ProductService {
            return false;
         }
         return true;
+    }
+
+    public ProductDTO toDTO(Product product) {
+        return ProductDTO.builder().id(product.getId()).title(product.getTitle()).price(product.getPrice()).categories(product.getCategories()).build();
     }
 
 }
