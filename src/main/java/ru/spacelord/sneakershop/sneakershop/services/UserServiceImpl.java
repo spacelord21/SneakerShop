@@ -1,14 +1,9 @@
 package ru.spacelord.sneakershop.sneakershop.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.spacelord.sneakershop.sneakershop.dao.BucketRepository;
@@ -18,8 +13,6 @@ import ru.spacelord.sneakershop.sneakershop.domain.Role;
 import ru.spacelord.sneakershop.sneakershop.domain.User;
 import ru.spacelord.sneakershop.sneakershop.dto.UserDTO;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -28,19 +21,17 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService, UserDetailsService{
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final BucketRepository bucketRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,BucketRepository bucketRepository) {
+    public UserServiceImpl(UserRepository userRepository,BucketRepository bucketRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.bucketRepository = bucketRepository;
     }
 
 
     @Override
-    public boolean save(UserDTO userDTO) {
+    public void save(UserDTO userDTO) {
         if(!Objects.equals(userDTO.getPassword(),userDTO.getMatchingPassword())) {
             throw new RuntimeException("Password isn't equals!");
         }
@@ -49,7 +40,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         }
         User user = User.builder()
                 .name(userDTO.getUserName())
-                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .password(userDTO.getPassword())
                 .email(userDTO.getEmail())
                 .role(Role.CLIENT)
                 .build();
@@ -57,7 +48,6 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         Bucket bucket = Bucket.builder().user(user).build();
         bucketRepository.save(bucket);
         userRepository.addBucketToUser(bucket,userRepository.findFirstByName(user.getName()).getId());
-        return true;
     }
 
     @Override

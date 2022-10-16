@@ -9,36 +9,30 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import ru.spacelord.sneakershop.sneakershop.services.UserDetailsImpl;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 @Component
-@PropertySource("classpath:jwt.properties")
+
 public class JwtUtils {
 
-    private Environment environment;
 
-    @Autowired
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
-    private final String jwtExpirationMs;
 
-    {
-        assert false;
-        jwtExpirationMs = environment.getProperty("jwtExpirationMs");
-    }
+    @Value("${jwtExpirationMs}")
+    private String jwtExpirationMs;
 
-    private final String jwtSecret;
 
-    {
-        assert false;
-        jwtSecret = environment.getProperty("jwtSecret");
-    }
+    @Value("${jwtSecret}")
+    private String jwtSecret;
+
 
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        long now = (new Date().getTime());
+        final Date expirationDate = new Date(now + Long.parseLong(jwtExpirationMs));
         return Jwts.builder().setSubject((userPrincipal.getUsername())).setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + jwtExpirationMs)).signWith(SignatureAlgorithm.HS512,jwtSecret)
+                .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512,jwtSecret)
                 .compact();
     }
 

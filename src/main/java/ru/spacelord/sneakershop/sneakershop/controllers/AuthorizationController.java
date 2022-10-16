@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.spacelord.sneakershop.sneakershop.config.jwt.JwtUtils;
 import ru.spacelord.sneakershop.sneakershop.dao.UserRepository;
@@ -31,16 +32,19 @@ public class AuthorizationController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public AuthorizationController(UserService userService,
                                    AuthenticationManager authenticationManager,
                                    JwtUtils jwtUtils,
-                                   UserRepository userRepository) {
+                                   UserRepository userRepository,
+                                   PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
@@ -73,7 +77,7 @@ public class AuthorizationController {
                         .role(Role.CLIENT.name())
                         .userName(signupRequest.getUsername())
                         .email(signupRequest.getEmail())
-                        .password(signupRequest.getPassword())
+                        .password(passwordEncoder.encode(signupRequest.getPassword()))
                         .matchingPassword(signupRequest.getMatchingPassword())
                 .build());
         return ResponseEntity.ok(new MessageResponse("Пользователь успешно зарегистрирован!"));
