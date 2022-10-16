@@ -2,6 +2,8 @@ package ru.spacelord.sneakershop.sneakershop.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import ru.spacelord.sneakershop.sneakershop.dto.ProductDTO;
@@ -25,37 +27,43 @@ public class BucketController {
     }
 
     @PostMapping("/add-to-bucket={id}")
-    public ProductDTO addToBucket(@AuthenticationPrincipal User user, @PathVariable Long id) {
-        bucketService.saveProduct(user.getUsername(), id);
+    public ProductDTO addToBucket(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        bucketService.saveProduct(username, id);
         return productService.getProductById(id);
     }
 
     @PostMapping("/get-products-from-bucket")
-    public List<ProductDTO> getProductsFromBucket(@AuthenticationPrincipal User user) {
-        List<ProductDTO> productDTOS = bucketService.getBucket(user.getUsername());
+    public List<ProductDTO> getProductsFromBucket() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<ProductDTO> productDTOS = bucketService.getBucket(username);
         productDTOS.sort(Comparator.comparing(ProductDTO::getId));
         return productDTOS;
     }
 
     @PostMapping("/delete-product-from-bucket-{id}")
-    public boolean deleteProductFromBucket(@AuthenticationPrincipal User user, @PathVariable(value = "id") Long id) {
-        return bucketService.deleteProductFromBucket(user.getUsername(),id);
+    public boolean deleteProductFromBucket(@PathVariable(value = "id") Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return bucketService.deleteProductFromBucket(username,id);
     }
 
     @PostMapping("/delete-all-from-bucket")
-    public String deleteAllProductsFromBucket(@AuthenticationPrincipal User user) {
-        bucketService.deleteAllProductFromBucket(user.getUsername());
+    public String deleteAllProductsFromBucket() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        bucketService.deleteAllProductFromBucket(username);
         return "deleted";
     }
 
     @PostMapping("/delete-all-from-bucket-by-id={id}")
-    public List<ProductDTO> deleteAllFromBucketById(@AuthenticationPrincipal User user, @PathVariable(value = "id")Long id) {
-        bucketService.deleteAllFromBucketById(user.getUsername(),id);
-        return bucketService.getBucket(user.getUsername());
+    public List<ProductDTO> deleteAllFromBucketById(@PathVariable(value = "id")Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        bucketService.deleteAllFromBucketById(username,id);
+        return bucketService.getBucket(username);
     }
 
     @PostMapping("/check-bucket")
-    public Integer getAmountInBucket(@AuthenticationPrincipal User user)  {
-        return bucketService.getAmountProductsInBucket(user.getUsername());
+    public Integer getAmountInBucket()  {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return bucketService.getAmountProductsInBucket(username);
     }
 }
