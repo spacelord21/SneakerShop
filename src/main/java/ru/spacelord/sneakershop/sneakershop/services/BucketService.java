@@ -11,10 +11,7 @@ import ru.spacelord.sneakershop.sneakershop.domain.Product;
 import ru.spacelord.sneakershop.sneakershop.dto.ProductDTO;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class BucketService {
@@ -37,26 +34,7 @@ public class BucketService {
 
     public List<ProductDTO> getBucket(String userName) {
         Bucket bucket = bucketRepository.getBucketById(userRepository.findFirstByName(userName).getBucket().getId());
-        List<Product> products = bucket.getProducts();
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        Map<Product,Integer> map = new HashMap<>();
-        for(Product product : products) {
-            if(!map.containsKey(product)) {
-                map.put(product,1);
-            } else {
-                map.put(product,map.get(product) + 1);
-            }
-        }
-        for(Product product : map.keySet()) {
-            productDTOS.add(ProductDTO.builder()
-                    .title(product.getTitle())
-                    .price(product.getPrice())
-                    .id(product.getId())
-                    .categories(product.getCategories())
-                    .amount(map.get(product))
-                    .build());
-        }
-        return productDTOS;
+        return getProductsWithTotalAmount(bucket);
     }
 
     public Integer getAmountProductsInBucket(String userName) {
@@ -67,11 +45,12 @@ public class BucketService {
 
 
     @Transactional
-    public boolean deleteProductFromBucket(String userName,Long id) {
+    public ProductDTO deleteProductFromBucket(String userName,Long id) {
         Bucket bucket = bucketRepository.getBucketById(userRepository.findFirstByName(userName).getBucket().getId());
-        Product product = productRepository.findFirstById(id);
-        return bucket.removeProduct(product);
-
+        bucket.removeProduct(productRepository.findFirstById(id));
+        //ProductDTO productDTO = getProductsWithTotalAmount(bucket).stream().filter(item -> !Objects.equals(item.getId(), id))
+        // доделать
+        return null;
     }
 
     @Transactional
@@ -86,4 +65,32 @@ public class BucketService {
         bucket.deleteAllById(id);
     }
 
+
+    public List<ProductDTO> getProductsWithTotalAmount(Bucket bucket) {
+        List<Product> products = bucket.getProducts();
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        HashMap<Product,Integer> map = productsMap(products);
+        for(Product product : map.keySet()) {
+            productDTOS.add(ProductDTO.builder()
+                    .title(product.getTitle())
+                    .price(product.getPrice())
+                    .id(product.getId())
+                    .categories(product.getCategories())
+                    .amount(map.get(product))
+                    .build());
+        }
+        return productDTOS;
+    }
+
+    public HashMap<Product,Integer> productsMap(List<Product> products) {
+        HashMap<Product,Integer> map = new HashMap<>();
+        for(Product product : products) {
+            if(!map.containsKey(product)) {
+                map.put(product,1);
+            } else {
+                map.put(product,map.get(product) + 1);
+            }
+        }
+        return map;
+    }
 }

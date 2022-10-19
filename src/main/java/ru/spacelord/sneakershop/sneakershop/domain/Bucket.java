@@ -34,8 +34,8 @@ public class Bucket {
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
-    public boolean removeProduct(Product product) {
-        return products.remove(product);
+    public void removeProduct(Product product) {
+        products.remove(product);
     }
 
     public void deleteAll() {

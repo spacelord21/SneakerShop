@@ -42,7 +42,7 @@ public class BucketController {
     }
 
     @PostMapping("/delete-product-from-bucket-{id}")
-    public boolean deleteProductFromBucket(@PathVariable(value = "id") Long id) {
+    public ProductDTO deleteProductFromBucket(@PathVariable(value = "id") Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return bucketService.deleteProductFromBucket(username,id);
     }
