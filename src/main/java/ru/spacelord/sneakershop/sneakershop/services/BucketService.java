@@ -11,7 +11,9 @@ import ru.spacelord.sneakershop.sneakershop.domain.Product;
 import ru.spacelord.sneakershop.sneakershop.dto.ProductDTO;
 
 
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BucketService {
@@ -28,29 +30,30 @@ public class BucketService {
         this.userRepository = userRepository;
     }
 
-    public void saveProduct(String userName,Long id) {
+    public Long getTotalPrice(String username) {
+        Bucket bucket = bucketRepository.getBucketById(userRepository.findFirstByName(username).getBucket().getId());
+        long sum = 0L;
+        for(Product product : bucket.getProducts()) {
+            sum += product.getPrice().longValue();
+        }
+        return sum;
+    }
+
+    public List<ProductDTO> saveProduct(String userName,Long id) {
         bucketRepository.addProduct(userRepository.findFirstByName(userName).getId(),id);
+        return getFinalListProduct(userName);
     }
 
     public List<ProductDTO> getBucket(String userName) {
         Bucket bucket = bucketRepository.getBucketById(userRepository.findFirstByName(userName).getBucket().getId());
-        return getProductsWithTotalAmount(bucket);
+        return bucket.getProducts().stream().map(this::toDTO).collect(Collectors.toList());
     }
-
-    public Integer getAmountProductsInBucket(String userName) {
-        return bucketRepository
-                .getBucketById(userRepository.findFirstByName(userName).getBucket().getId())
-                .getProducts().size();
-    }
-
 
     @Transactional
-    public ProductDTO deleteProductFromBucket(String userName,Long id) {
+    public List<ProductDTO> deleteProductFromBucket(String userName,Long id) {
         Bucket bucket = bucketRepository.getBucketById(userRepository.findFirstByName(userName).getBucket().getId());
         bucket.removeProduct(productRepository.findFirstById(id));
-        //ProductDTO productDTO = getProductsWithTotalAmount(bucket).stream().filter(item -> !Objects.equals(item.getId(), id))
-        // доделать
-        return null;
+        return getFinalListProduct(userName);
     }
 
     @Transactional
@@ -65,32 +68,36 @@ public class BucketService {
         bucket.deleteAllById(id);
     }
 
-
-    public List<ProductDTO> getProductsWithTotalAmount(Bucket bucket) {
-        List<Product> products = bucket.getProducts();
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        HashMap<Product,Integer> map = productsMap(products);
-        for(Product product : map.keySet()) {
-            productDTOS.add(ProductDTO.builder()
-                    .title(product.getTitle())
-                    .price(product.getPrice())
-                    .id(product.getId())
-                    .categories(product.getCategories())
-                    .amount(map.get(product))
-                    .build());
-        }
-        return productDTOS;
-    }
-
-    public HashMap<Product,Integer> productsMap(List<Product> products) {
-        HashMap<Product,Integer> map = new HashMap<>();
-        for(Product product : products) {
-            if(!map.containsKey(product)) {
-                map.put(product,1);
+    public List<ProductDTO> getFinalListProduct(String username) {
+        List<ProductDTO> productDTOS = getBucket(username);
+        HashMap<ProductDTO,Integer> dtoIntegerHashMap = new HashMap<>();
+        for(ProductDTO product : productDTOS) {
+            if(!dtoIntegerHashMap.containsKey(product)) {
+                dtoIntegerHashMap.put(product,1);
             } else {
-                map.put(product,map.get(product) + 1);
+                dtoIntegerHashMap.put(product,dtoIntegerHashMap.get(product) + 1);
             }
         }
-        return map;
+        List<ProductDTO> productsResult = new ArrayList<>();
+        for(ProductDTO productDTO : dtoIntegerHashMap.keySet()) {
+            productsResult.add(ProductDTO.builder()
+                    .id(productDTO.getId())
+                    .title(productDTO.getTitle())
+                    .price(productDTO.getPrice())
+                    .categories(productDTO.getCategories())
+                    .amount(dtoIntegerHashMap.get(productDTO))
+                    .build());
+        }
+        productsResult.sort(Comparator.comparing(ProductDTO::getId));
+        return productsResult;
+    }
+
+    public ProductDTO toDTO(Product product) {
+        return ProductDTO.builder()
+                .id(product.getId())
+                .title(product.getTitle())
+                .price(product.getPrice())
+                .categories(product.getCategories())
+                .build();
     }
 }

@@ -1,16 +1,11 @@
 package ru.spacelord.sneakershop.sneakershop.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import ru.spacelord.sneakershop.sneakershop.dto.ProductDTO;
 import ru.spacelord.sneakershop.sneakershop.services.BucketService;
-import ru.spacelord.sneakershop.sneakershop.services.ProductService;
 
-import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -18,31 +13,26 @@ import java.util.List;
 public class BucketController {
 
     private final BucketService bucketService;
-    private final ProductService productService;
 
     @Autowired
-    public BucketController(BucketService bucketService, ProductService productService) {
+    public BucketController(BucketService bucketService) {
         this.bucketService = bucketService;
-        this.productService = productService;
     }
 
     @PostMapping("/add-to-bucket={id}")
-    public ProductDTO addToBucket(@PathVariable Long id) {
+    public List<ProductDTO> addToBucket(@PathVariable Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        bucketService.saveProduct(username, id);
-        return productService.getProductById(id);
+        return bucketService.saveProduct(username, id);
     }
 
     @PostMapping("/get-products-from-bucket")
     public List<ProductDTO> getProductsFromBucket() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<ProductDTO> productDTOS = bucketService.getBucket(username);
-        productDTOS.sort(Comparator.comparing(ProductDTO::getId));
-        return productDTOS;
+        return bucketService.getFinalListProduct(username);
     }
 
     @PostMapping("/delete-product-from-bucket-{id}")
-    public ProductDTO deleteProductFromBucket(@PathVariable(value = "id") Long id) {
+    public List<ProductDTO> deleteProductFromBucket(@PathVariable(value = "id") Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return bucketService.deleteProductFromBucket(username,id);
     }
@@ -58,12 +48,13 @@ public class BucketController {
     public List<ProductDTO> deleteAllFromBucketById(@PathVariable(value = "id")Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         bucketService.deleteAllFromBucketById(username,id);
-        return bucketService.getBucket(username);
+        return bucketService.getFinalListProduct(username);
     }
 
-    @PostMapping("/check-bucket")
-    public Integer getAmountInBucket()  {
+    @PostMapping("/get-total-price-products-in-bucket")
+    public Long getTotalPriceProductsInBucket() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return bucketService.getAmountProductsInBucket(username);
+        return bucketService.getTotalPrice(username);
     }
+
 }
