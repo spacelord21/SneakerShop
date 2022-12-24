@@ -1,8 +1,10 @@
 create sequence bucket_seq start 1 increment 1;
 create sequence category_seq start 1 increment 1;
+create sequence images_seq start 1 increment 1;
 create sequence order_details_seq start 1 increment 1;
 create sequence order_seq start 1 increment 1;
 create sequence product_seq start 1 increment 1;
+create sequence sizes_seq start 1 increment 1;
 create sequence user_seq start 1 increment 1;
 create table buckets
 (
@@ -19,6 +21,13 @@ create table categories
 (
     id    int8 not null,
     title varchar(255),
+    primary key (id)
+);
+create table images
+(
+    id         int8 not null,
+    url        varchar(255),
+    product_id int8,
     primary key (id)
 );
 create table orders
@@ -54,6 +63,17 @@ create table products_categories
     product_id  int8 not null,
     category_id int8 not null
 );
+create table products_sizes
+(
+    product_id int8 not null,
+    size_id    int8 not null
+);
+create table sizes
+(
+    id   int8 not null,
+    size varchar(255),
+    primary key (id)
+);
 create table users
 (
     id        int8    not null,
@@ -73,6 +93,8 @@ alter table if exists buckets_products
     add constraint FKloyxdc1uy11tayedf3dpu9lci foreign key (product_id) references products;
 alter table if exists buckets_products
     add constraint FKc49ah45o66gy2f2f4c3os3149 foreign key (bucket_id) references buckets;
+alter table if exists images
+    add constraint FKghwsjbjo7mg3iufxruvq6iu3q foreign key (product_id) references products;
 alter table if exists orders
     add constraint FK32ql8ubntj5uh44ph9659tiih foreign key (user_id) references users;
 alter table if exists orders_details
@@ -85,5 +107,9 @@ alter table if exists products_categories
     add constraint FKqt6m2o5dly3luqcm00f5t4h2p foreign key (category_id) references categories;
 alter table if exists products_categories
     add constraint FKtj1vdea8qwerbjqie4xldl1el foreign key (product_id) references products;
+alter table if exists products_sizes
+    add constraint FKt7lhs1lrbb2w48cjdxvax5m9g foreign key (size_id) references sizes;
+alter table if exists products_sizes
+    add constraint FKddbtdcgrf05hypy7y2rol12tc foreign key (product_id) references products;
 alter table if exists users
     add constraint FK8l2qc4c6gihjdyoch727guci foreign key (bucket_id) references buckets;

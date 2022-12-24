@@ -11,4 +11,5 @@ spring:
     username: spacelord
     driver-class-name: org.postgresql.Driver
   flyway:
-    baseline-on-migrate: true
+    baseline-on-migrate: false
+    enabled: true
